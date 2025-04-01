@@ -1,5 +1,10 @@
 <template>
   <div class="">
+    <div style="padding: 2px; text-align: left">
+      <b-button class="float-left" variant="primary" size="sm" @click="resetSession" v-tooltip="`Reset Session`">
+        Reset Session
+      </b-button>
+    </div>
     <div class="pane" :style="{ width: width, height: editorHeight }" v-if="showTerminal">
       <ScriptusTerminal :user="terminal.user" :logs="terminal.logs" :system="terminal.system">
         <template #terminalbar>
@@ -171,7 +176,7 @@ export default {
       let size = bindow.size();
       this.width = this.showTerminal || this.showSidebar ? "50%" : "100%";
       this.editorWidth = this.showTerminal || this.showSidebar ? "99%" : "100%";
-      this.editorHeight = size.height - 0 + "px";
+      this.editorHeight = size.height - 40 + "px";
     },
     async loadLogs() {
       if (this.showTerminal) {
@@ -189,6 +194,11 @@ export default {
       }
       clearTimeout(this.trail);
       this.trail = setTimeout(() => this.loadLogs(), 2000);
+    },
+
+    resetSession() {
+      bindow.deleteCookie("contact_id");
+      this.$service.delete("/api/session/reset");
     },
   },
 };
