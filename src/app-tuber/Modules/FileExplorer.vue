@@ -35,13 +35,13 @@
                 :src="selectedFile.url"
                 controls
                 class="w-100 rounded"
-                style="max-height: 400px; object-fit: contain"
+                style="max-height: 500px; object-fit: contain"
               ></video>
             </div>
 
             <!-- VR 360 view -->
             <div v-else>
-              <a-scene embedded style="height: 400px">
+              <a-scene embedded style="height: 500px">
                 <a-assets>
                   <video id="vrVideo" :src="selectedFile.url" autoplay loop="true" crossorigin="anonymous"></video>
                 </a-assets>
@@ -174,7 +174,7 @@ export default {
 <style scoped>
 .vr-container {
   width: 100%;
-  height: 500px;
+  height: 600px;
   position: relative;
 }
 
@@ -184,12 +184,12 @@ a-scene {
 }
 
 img {
-  max-height: 400px;
+  max-height: 500px;
   object-fit: contain;
 }
 
 video {
-  max-height: 400px;
+  max-height: 500px;
   object-fit: contain;
 }
 </style>
