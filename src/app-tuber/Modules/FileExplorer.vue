@@ -158,7 +158,7 @@ export default {
     selectFile(file) {
       if (file.type === "file") {
         this.selectedFile = file;
-        this.vrMode = false; // reset VR on new selection
+        //this.vrMode = false; // reset VR on new selection
       }
     },
 
