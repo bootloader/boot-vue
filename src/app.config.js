@@ -10,7 +10,7 @@ module.exports = AppConfig.extend({
       // chunks: ["chunk-vendors", "chunk-common", "customer"],
       component: () => import("@/app-chat/AppChat.vue"),
       context: "/chat",
-      entry: './src/main.js',
+      entry: "./src/main.js",
     },
     scriptus: {
       // entry: "./src/main.js",
@@ -20,7 +20,7 @@ module.exports = AppConfig.extend({
       // chunks: ["chunk-vendors", "chunk-common", "customer"],
       component: () => import("@/app-scriptus/AppScriptus.vue"),
       context: "/scriptus",
-      entry: './src/main.js',
+      entry: "./src/main.js",
     },
     tuber: {
       // entry: "./src/main.js",
@@ -30,12 +30,12 @@ module.exports = AppConfig.extend({
       // chunks: ["chunk-vendors", "chunk-common", "customer"],
       component: () => import("@/app-tuber/AppTuber.vue"),
       context: "/tuber",
-      entry: './src/main.js',
+      entry: "./src/main.js",
     },
     default: {
       component: () => import("@/app/App.vue"),
-      context : "/",
-      entry: './src/main.js',
+      context: "/",
+      entry: "./src/main.js",
     },
   },
 });
