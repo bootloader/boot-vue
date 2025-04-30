@@ -20,5 +20,11 @@ npm run build
 npm run lint
 ```
 
+### Point CDN to your local
+ in browser dev console
+```
+localCDN()
+```
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
