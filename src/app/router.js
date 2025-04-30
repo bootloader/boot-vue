@@ -2,12 +2,17 @@ import { BootRouter } from "@/@common";
 
 export default BootRouter.route({
   app: "default",
-  base: "/default",
+  base: "/",
   routes: [
+    {
+      path: "/",
+      redirect: "/app/notbook",
+      name: "root",
+    },
     // Dashboards
     {
-      path: "/app/chat",
-      name: "customer-chat",
+      path: "/app/notbook",
+      name: "customer-notbook",
       component: () => import("./Modules/NoteBook.vue"),
     },
   ],

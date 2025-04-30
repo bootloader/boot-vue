@@ -1,3 +1,17 @@
+let localConfig = null;
+
+function getlocalConfig() {
+  if (!localConfig) {
+    try {
+      localConfig = require("../../config/local.json");
+    } catch (e) {
+      console.log("No local.json file found, using default config");
+      localConfig = {};
+    }
+  }
+  return localConfig;
+}
+
 let CONFIG = {
   getAppName() {
     let slectedAppName = window.CONST?.APP;
@@ -23,18 +37,33 @@ let CONFIG = {
     for (let key in this.apps) {
       let app = this.apps[key];
       pages[key] = {
-        entry: app.entry || './src/main.js',
-        template: app.template || 'public/index.html',
-        filename: app.filename || 'index.html',
+        entry: app.entry || "./src/main.js",
+        template: app.template || "public/index.html",
+        filename: app.filename || "index.html",
         title: app.title || key,
-        chunks: app.chunks || ['chunk-vendors', 'chunk-common', key],
+        chunks: app.chunks || ["chunk-vendors", "chunk-common", key],
       };
     }
     return pages;
   },
   getApp(appName) {
-    if(!appName) appName = this.getAppName();
+    if (!appName) appName = this.getAppName();
     return this.apps[appName];
+  },
+  devServer() {
+    let ssl = getlocalConfig()?.ssl;
+    if (ssl && ssl.enabled) {
+      const fs = require("fs");
+      return {
+        https: {
+          key: fs.readFileSync("./config/ssl/key.pem"),
+          cert: fs.readFileSync("./config/ssl/cert.pem"),
+        },
+        port: 8443,
+        host: "0.0.0.0", // So it's accessible over the local network
+      };
+    }
+    return {};
   },
 };
 
@@ -46,7 +75,7 @@ module.exports = {
     };
     return CONFIG;
   },
-  config(){
-    return CONFIG
-  }
+  config() {
+    return CONFIG;
+  },
 };

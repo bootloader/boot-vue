@@ -1,12 +1,12 @@
 <template>
   <div class="">
-    <div style="padding: 2px; text-align: left">
+    <div style="padding: 2px; text-align: left" hidden>
       <b-button class="float-left" variant="primary" size="sm" @click="resetSession" v-tooltip="`Reset Session`">
         Reset Session
       </b-button>
     </div>
     <div class="pane" :style="{ width: width, height: editorHeight }" v-if="showTerminal">
-      <ScriptusTerminal :user="terminal.user" :logs="terminal.logs" :system="terminal.system">
+      <FileExplorer :user="terminal.user" :logs="terminal.logs" :system="terminal.system">
         <template #terminalbar>
           <span
             class="float-right fas fa-ban pointer text-red"
@@ -14,45 +14,19 @@
             @click="terminal.logs = []"
           ></span>
         </template>
-      </ScriptusTerminal>
+      </FileExplorer>
     </div>
-
-    <CherryWebChat
-      :participants="participants"
-      :titleImageUrl="titleImageUrl"
-      :onMessageWasSent="onMessageWasSent"
-      :messageList="messageList"
-      :newMessagesCount="newMessagesCount"
-      :isOpen="isChatOpen"
-      :close="closeChat"
-      :open="openChat"
-      :showEmoji="true"
-      :showFile="true"
-      :showEdition="true"
-      :showDeletion="true"
-      :showTypingIndicator="showTypingIndicator"
-      :showLauncher="true"
-      :showCloseButton="true"
-      :colors="colors"
-      :alwaysScrollToBottom="alwaysScrollToBottom"
-      :disableUserListToggle="false"
-      :messageStyling="messageStyling"
-      @onType="handleOnType"
-      @edit="editMessage"
-    />
   </div>
 </template>
 
 <script>
 import Vue from "vue";
-import CherryWebChat from "@cherrybase/cherry-webchat";
-import ScriptusTerminal from "./ScriptusTerminal.vue";
+import FileExplorer from "./FileExplorer.vue";
 import debounce from "debounce";
 import bindow from "@/@common/utils/bindow";
-Vue.use(CherryWebChat);
 
 export default {
-  components: { ScriptusTerminal },
+  components: { FileExplorer },
   data() {
     return {
       participants: [
