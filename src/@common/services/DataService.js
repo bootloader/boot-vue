@@ -1,84 +1,13 @@
-import Vue from "vue";
-import store from "./../store";
-
 import axios from "axios";
-
+import store from "./../store";
 import { DataProcessor } from "./processor";
 import { i18n } from "./i18n";
 import Urly from "./../utils/Urly";
-import tunnel from "./tunnel";
 import storage from "local-storage-fallback";
 import jskeeper from "./jskeeper";
 
 let varAdd = false;
-let myRespInterceptor = axios.interceptors.response.use(
-  function (response) {
-    let config = response.config;
-    if (response.request.responseURL.endsWith("/auth/login")) {
-      //https://app.mehery.com/admin/auth/login
-      var nextURL = new URL(response.request.responseURL);
-      nextURL.searchParams.append("referer", encodeURIComponent(window.location.href));
-      window.location.reload();
-      //window.location.href = nextURL.toString();
-    }
-
-    if (config.toast !== false && response.data && response.data.message) {
-      //Vue.toaster.success(response.data.message);
-      if (Vue.$toast && Vue.$toast.success) Vue.$toast.success(response.data.message);
-    }
-    //console.log("myRespInterceptor:success")
-    return response;
-  },
-  function (error, s) {
-    let response = error.response;
-    let config = error.config;
-    if (config.toast !== false && response.data && response.data.message) {
-      if (Vue.$toast && Vue.$toast.error) Vue.$toast.error(response.data.message);
-    }
-    if (error.response.data.errors) {
-      error.response.data.veeErrors = error.response.data.errors.reduce(function (previousValue, currentValue) {
-        let path = [];
-        if (currentValue.obzect) path.push(currentValue.obzect);
-        if (currentValue.field) path.push(currentValue.field);
-        let _path = path.join(".");
-        let _field_key = "fields." + _path;
-        let _field_ = i18n.t("fields." + _path);
-        _field_ = _field_ == _field_key ? i18n.t("fields." + currentValue.field) : _field_;
-
-        let _keys = [
-          "errors." + currentValue.codeKey,
-          "errors." + currentValue.code,
-          "errors." + currentValue.description,
-          currentValue.codeKey,
-          currentValue.code,
-          currentValue.description,
-        ];
-
-        let _message;
-        for (var i in _keys) {
-          if (_keys[i]) {
-            _message = i18n.t(_keys[i], {
-              ...currentValue,
-              _field_: _field_,
-            });
-            //console.log("_message",_message)
-            if (_message != _keys[i]) {
-              break;
-            }
-          }
-        }
-        previousValue[_path] = _message;
-        return previousValue;
-      }, {});
-    }
-    return Promise.reject(error);
-  }
-);
-axios.interceptors.request.use((config) => {
-  config.headers["timezone"] = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-  return config;
-});
+let myRespInterceptor;
 
 function path2key(path) {
   return path
@@ -101,7 +30,9 @@ function processor(params, responseData, config) {
     }
     if (responseData.results) {
       for (var i in responseData.results) {
-        responseData.results[i] = DataProcessor[dataType](responseData.results[i]);
+        responseData.results[i] = DataProcessor[dataType](
+          responseData.results[i]
+        );
       }
     }
   }
@@ -111,8 +42,10 @@ function processor(params, responseData, config) {
       responseData.meta = DataProcessor[metaType](responseData.meta);
     }
     if (responseData.details) {
-      for (var i in responseData.details) {
-        responseData.details[i] = DataProcessor[metaType](responseData.details[i]);
+      for (let i in responseData.details) {
+        responseData.details[i] = DataProcessor[metaType](
+          responseData.details[i]
+        );
       }
     }
   }
@@ -132,7 +65,6 @@ function slashUrl(url, query, config) {
       return part;
     })
     .join("");
-  return url.replace(/\/\/+/g, "/");
 }
 
 const DataService = {
@@ -149,11 +81,17 @@ const DataService = {
     let results = responseData.results ? responseData.results : responseData;
     if (url.indexOf("/api/") == 0 || url.indexOf("api/") == 0) {
       console.log("submitX", pathKey, results, responseData);
-      await store.dispatch("UPDATE_API_STORE", { pathKey: pathKey, data: results });
+      await store.dispatch("UPDATE_API_STORE", {
+        pathKey: pathKey,
+        data: results,
+      });
       varAdd = true;
       await this.getX(url);
     } else {
-      await store.dispatch("UPDATE_REST_STORE", { pathKey: pathKey, data: results });
+      await store.dispatch("UPDATE_REST_STORE", {
+        pathKey: pathKey,
+        data: results,
+      });
     }
     return results;
   },
@@ -182,7 +120,11 @@ const DataService = {
     }
 
     // if(store.getters.StateApi[pathKey] && !_config.refresh){
-    if (store.getters.StateApi[pathKey] && !_config.refresh && varAdd == false) {
+    if (
+      store.getters.StateApi[pathKey] &&
+      !_config.refresh &&
+      varAdd == false
+    ) {
       // console.log("stop getX1",pathKey,query,config);
       return store.getters.StateApi[pathKey];
     }
@@ -235,7 +177,11 @@ const DataService = {
       let response = await axios.post(url, SubmitForm, _config);
       return processor(params, response.data, _config);
     } catch (e) {
-      if (_config && _config.ref && typeof _config.ref.setErrors == "function") {
+      if (
+        _config &&
+        _config.ref &&
+        typeof _config.ref.setErrors == "function"
+      ) {
         _config.ref.setErrors(e.response.data.veeErrors);
       }
       return Promise.reject(e);
@@ -282,7 +228,11 @@ const DataService = {
     }
   },
   async store(namespace, key, item) {
-    store.dispatch("UpdateLocalStore", { namespace: namespace, key: key, data: item });
+    store.dispatch("UpdateLocalStore", {
+      namespace: namespace,
+      key: key,
+      data: item,
+    });
   },
   async local() {
     store.dispatch("UpdateLocalStore", {
@@ -293,7 +243,8 @@ const DataService = {
   },
   localStorage: {
     get(key) {
-      return JSON.parse(storage.getItem("service.storage." + key) || "{}").value;
+      return JSON.parse(storage.getItem("service.storage." + key) || "{}")
+        .value;
     },
     set(key, value) {
       storage.setItem(
@@ -325,9 +276,80 @@ const DataService = {
       },
     };
   },
-};
 
-Vue.prototype.$service = DataService;
-Vue.prototype.$tunnel = tunnel;
+  // init() will set up Axios interceptors (called from plugin)
+  init(VueApp) {
+    console.log("[v3] [DataService] init");
+
+    myRespInterceptor = axios.interceptors.response.use(
+      function (response) {
+        const config = response.config;
+
+        if (response.request.responseURL.endsWith("/auth/login")) {
+          const nextURL = new URL(response.request.responseURL);
+          nextURL.searchParams.append(
+            "referer",
+            encodeURIComponent(window.location.href)
+          );
+          window.location.reload();
+        }
+
+        if (config.toast !== false && response.data?.message) {
+          VueApp.config.globalProperties.$toast?.success?.(
+            response.data.message
+          );
+        }
+
+        return response;
+      },
+      function (error) {
+        const response = error.response;
+        const config = error.config;
+
+        if (config.toast !== false && response?.data?.message) {
+          VueApp.config.globalProperties.$toast?.error?.(response.data.message);
+        }
+
+        if (response?.data?.errors) {
+          response.data.veeErrors = response.data.errors.reduce((acc, err) => {
+            const path = [err.obzect, err.field].filter(Boolean).join(".");
+            const fieldKey = `fields.${path}`;
+            let translatedField = i18n.t(fieldKey);
+            translatedField =
+              translatedField === fieldKey
+                ? i18n.t(`fields.${err.field}`)
+                : translatedField;
+
+            const keys = [
+              `errors.${err.codeKey}`,
+              `errors.${err.code}`,
+              `errors.${err.description}`,
+              err.codeKey,
+              err.code,
+              err.description,
+            ];
+
+            let message;
+            for (const key of keys) {
+              message = i18n.t(key, { ...err, _field_: translatedField });
+              if (message !== key) break;
+            }
+
+            acc[path] = message;
+            return acc;
+          }, {});
+        }
+
+        return Promise.reject(error);
+      }
+    );
+
+    axios.interceptors.request.use((config) => {
+      config.headers["timezone"] =
+        Intl.DateTimeFormat().resolvedOptions().timeZone;
+      return config;
+    });
+  },
+};
 
 export default DataService;

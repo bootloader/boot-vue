@@ -1,23 +1,28 @@
 <template>
-    <div id="app" class="app-wrapper">
-        <component :is="apped"> </component>
-    </div>
+  <div id="app" class="app-wrapper">
+    <Suspense>
+      <template #default>
+        <component :is="app" />
+      </template>
+      <template #fallback>
+        <div class="loading">Loading...</div>
+      </template>
+    </Suspense>
+  </div>
 </template>
 
 <script>
-    export default {
-        name: 'AppWrapper',
-        props: {
-            app: {},
-        },
-        computed: {
-            apped() {
-                return this.app;
-            },
-        },
-    };
+export default {
+  name: "AppWrapper",
+  props: {
+    app: {
+      type: [Object, Function],
+      required: true,
+    },
+  },
+};
 </script>
 
-<style lang="scss">
-    //@import "./assets/base.scss";
+<style scoped lang="scss">
+// @import "@/assets/base.scss";
 </style>

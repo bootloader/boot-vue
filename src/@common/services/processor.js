@@ -1,10 +1,7 @@
-const DataProcessor = {
+let DataProcessor = {};
 
+function registerDataProcessor(name, processor) {
+  DataProcessor[name] = processor;
 }
 
-export default {
-  DataProcessor,
-  registerDataProcessor: function (name, processor) {
-    DataProcessor[name] = processor
-  }
-}
+export { DataProcessor, registerDataProcessor };

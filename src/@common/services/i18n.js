@@ -1,51 +1,88 @@
-import Vue from "vue";
-import VueI18n from "vue-i18n";
-import { localize } from 'vee-validate';
-import ar from "vee-validate/dist/locale/ar.json";
-import en from "vee-validate/dist/locale/en.json";
+import { createI18n } from "vue-i18n";
+import { configure } from "vee-validate";
+import { localize } from "@vee-validate/i18n";
 
-Vue.use(VueI18n);
+import ar from "@vee-validate/i18n/dist/locale/ar.json";
+import en from "@vee-validate/i18n/dist/locale/en.json";
 
-console.log("i18NLoaded");
-
-let i18nConfig = {
+const i18nConfig = {
+  legacy: false, // use Composition API mode
   locale: "en",
+  fallbackLocale: "en",
   messages: {
     ar: {
       fields: {
         email: "البريد الاليكتروني",
-        password: "كلمة السر"
+        password: "كلمة السر",
       },
-      validation: ar.messages
+      validation: ar.messages,
     },
     en: {
       fields: {
         email: "E-mail",
         name: "Name",
-        phone : "Phone",
-        company : "Company Name",
-        country : "Country",
-        role : "Role",
-        password: "Password"
+        phone: "Phone",
+        company: "Company Name",
+        country: "Country",
+        role: "Role",
+        password: "Password",
       },
       validation: en.messages,
-      errors : {
-        'NotNull' : "The {_field_} is required",
-        'ValidPhone' : 'Enter valid {_field_} eg +91 XXXXX XXXXX',
-        'ValidPhonesPerLine' : 'Enter valid mobile number eg 91XXXXXXXXXX per line',
-        'ValidEmail' : "Enter valid email address eg you@company.com",
-        'ValidURL' : "Enter valid URL address eg https://company.com/some/path/to_file",
-        'Pattern' : "Enter valid {_field_}",
-        'LessVariable' : "Insufficent number of valiables in {_field_}",
-        'ExtraVariable' : "More than allowed valiables in {_field_}",
-        'InvalidVariable' : "Invalid valiables in {_field_}",
-        'InvalidVariableSeq' : "Invalid valiables sequence in {_field_}",
-        'PositionVariable' : "Invalid position of valiables in {_field_}",
-      }
+      errors: {
+        NotNull: "The {_field_} is required",
+        ValidPhone: "Enter valid {_field_} eg +91 XXXXX XXXXX",
+        ValidPhonesPerLine:
+          "Enter valid mobile number eg 91XXXXXXXXXX per line",
+        ValidEmail: "Enter valid email address eg you@company.com",
+        ValidURL:
+          "Enter valid URL address eg https://company.com/some/path/to_file",
+        Pattern: "Enter valid {_field_}",
+        LessVariable: "Insufficent number of variables in {_field_}",
+        ExtraVariable: "More than allowed variables in {_field_}",
+        InvalidVariable: "Invalid variables in {_field_}",
+        InvalidVariableSeq: "Invalid variables sequence in {_field_}",
+        PositionVariable: "Invalid position of variables in {_field_}",
+      },
+    },
+  },
+};
+
+const i18n = createI18n(i18nConfig);
+
+// Configure vee-validate to use i18n translation
+configure({
+  generateMessage: localize({
+    en,
+    ar,
+  }),
+  validateOnInput: true,
+});
+
+export { i18n };
+
+/*
+
+Composition API>>
+import { useI18n } from 'vue-i18n'
+
+export default {
+  setup() {
+    const { t } = useI18n()
+    return {
+      label: t('fields.email'),
     }
-  }
+  },
 }
 
-localize(i18nConfig);
-const i18n = new VueI18n(i18nConfig);
-export { i18n };
+
+Template>>
+<p>{{ $t('fields.password') }}</p>
+
+
+In any .js file >>
+import { i18n } from '@common/services/i18n'
+
+const message = i18n.global.t('greeting', { name: 'Vijay' })
+console.log(message) // "Hello Vijay"
+
+*/

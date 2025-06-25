@@ -2,20 +2,20 @@ module.exports = {
   root: true,
   env: {
     node: true,
-    browser: true,
-    es6: true,  // ✅ Ensures ES6+ features are enabled
   },
-  extends: ["plugin:vue/essential", "eslint:recommended"],
+  extends: [
+    "plugin:vue/vue3-essential",
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+  ],
   parserOptions: {
-    ecmaVersion: 2021, // Ensure it supports ES2021 features (optional chaining)
-    sourceType: "module",
-    parser: "babel-eslint",
+    parser: "@babel/eslint-parser",
   },
   rules: {
-    "no-unused-vars": "off",
+    "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
+    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+    "no-global-assign": "warn",
+    "no-unused-vars": "warn",
     "no-useless-escape": "off",
-    "no-redeclare": "off",
-    "no-unreachable": "off",
-    "no-mixed-spaces-and-tabs" : "off"
   },
 };

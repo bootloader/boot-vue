@@ -1,5 +1,4 @@
 let localConfig = null;
-
 function getlocalConfig() {
   if (!localConfig) {
     try {
@@ -15,6 +14,7 @@ function getlocalConfig() {
 let CONFIG = {
   getAppName() {
     let slectedAppName = window.CONST?.WEBAPP || window.CONST?.APP;
+
     if (!slectedAppName) {
       for (let key in this.apps) {
         let app = this.apps[key];
@@ -24,14 +24,23 @@ let CONFIG = {
         }
       }
     }
+
     return slectedAppName || "default"; // Read from global config
   },
+
+  getApp(appName) {
+    if (!appName) appName = this.getAppName();
+    return this.apps[appName];
+  },
+
   getAppPath(appName) {
     return "default" == appName ? "app" : `app-${appName}`;
   },
+
   getPublicPath(appName) {
     return this.getApp(appName)?.publicPath || "/";
   },
+
   getPages() {
     let pages = {};
     for (let key in this.apps) {
@@ -46,12 +55,10 @@ let CONFIG = {
     }
     return pages;
   },
-  getApp(appName) {
-    if (!appName) appName = this.getAppName();
-    return this.apps[appName];
-  },
+
   devServer() {
     let ssl = getlocalConfig()?.ssl;
+    /*
     if (ssl && ssl.enabled) {
       const fs = require("fs");
       return {
@@ -63,6 +70,7 @@ let CONFIG = {
         host: "0.0.0.0", // So it's accessible over the local network
       };
     }
+    */
     return {};
   },
 };
