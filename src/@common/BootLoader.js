@@ -1,11 +1,9 @@
 import { createApp, defineAsyncComponent, h } from "vue";
 import axios from "axios";
-// import store from "./store";
-import { i18n } from "./services/i18n";
 
-import AppWrapper from "./AppWrapper.vue";
 import BootRouter from "./BootRouter";
-import BootInject from "./BootInject";
+import BootPlugins from "./BootPlugins";
+import AppWrapper from "./AppWrapper.vue";
 
 export default function Bootloader(appConfig) {
   console.log("[v3] [Bootloader] appConfig", appConfig);
@@ -76,28 +74,33 @@ export default function Bootloader(appConfig) {
     }
     const router = BootRouter.router(routerMod.default);
 
-    /* import app */
+    /* import app > sync way */
     // const appComponent = await appConfig.getApp()?.component();
-    // const app = createApp(appComponent.default); // sync way
+    // const app = createApp(appComponent.default);
 
+    /* import app > async way */
     const appComponent = defineAsyncComponent(appConfig.getApp()?.component);
     const app = createApp({
       render() {
         return h(AppWrapper, { app: appComponent });
       },
-    }); // async way
+    });
 
-    /* Register internal plugins */
-    app.use(i18n);
-    // app.use(store);
-    app.use(BootInject);
-    app.use(router);
+    /* Register framework plugins */
+    app.use(BootPlugins);
 
-    /* Register custom plugins */
+    /* Register app plugins */
+    if (appConfig.getApp()?.plugins) {
+      const AppPlugins = await appConfig.getApp()?.plugins();
+      app.use(AppPlugins.default);
+    }
+
+    /* backward compatibility */
     Object.entries(PLUGINS).forEach(([key, plugin]) => {
       app.use(plugin);
     });
 
+    app.use(router);
     app.mount("#app");
   };
 

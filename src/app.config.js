@@ -25,13 +25,14 @@ module.exports = AppConfig.extend({
     // },
     insights360: {
       component: () => import("@/app-insights360/AppInsights360.vue"),
-      context: "/",
+      context: "/insights360",
       entry: "./src/main.js",
     },
     pushapp: {
       component: () => import("@/app-pushapp/AppPushapp.vue"),
-      context: "/",
+      context: "/pushapp",
       entry: "./src/main.js",
+      plugins: () => import("@/app-pushapp/plugins"),
     },
   },
 });
